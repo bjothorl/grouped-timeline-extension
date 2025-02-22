@@ -1,8 +1,33 @@
 {
   "name": "grouped-timeline",
   "displayName": "Grouped Timeline",
-  "description": "Groups near-simultaneous changes in VSCode's local timeline, and allows for restoring grouped or individual files to any previous timeline save point.",
-  "version": "0.0.1",
+  "description": "Groups near-simultaneous changes in VSCode's local timeline, and allows for restoring grouped or individual files to any previous timeline save point.\nMuch like JetBrains's Rider's Local History feature.",
+  "version": "1.0.0",
+  "publisher": "Ignire",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bjothorl/grouped-timeline-extension"
+  },
+  "bugs": {
+    "url": "https://github.com/bjothorl/grouped-timeline-extension/issues"
+  },
+  "homepage": "https://github.com/bjothorl/grouped-timeline-extension#readme",
+  "license": "MIT",
+  "icon": "icon.png",
+  "galleryBanner": {
+    "color": "#C80000",
+    "theme": "dark"
+  },
+  "keywords": [
+    "timeline",
+    "history",
+    "backup",
+    "restore",
+    "group",
+    "local",
+    "history",
+    "local history"
+  ],
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -158,6 +183,7 @@
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "eslint": "^8.44.0",
+    "rimraf": "^6.0.1",
     "ts-loader": "^9.5.2",
     "typescript": "^5.1.6",
     "webpack": "^5.98.0",
