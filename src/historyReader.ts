@@ -24,12 +24,24 @@ export class HistoryReader {
     private cachedHistoryFiles: HistoryEntry[] = [];
 
     constructor() {
-        // Get appropriate path based on platform
-        this.historyPath = process.platform === 'win32' 
-            ? path.join(process.env.APPDATA!, 'Cursor', 'User', 'History')
-            : process.platform === 'darwin'
-                ? path.join(process.env.HOME!, 'Library', 'Application Support', 'Cursor', 'User', 'History')
-                : path.join(process.env.HOME!, '.config', 'Cursor', 'User', 'History');
+        // Detect if running in Cursor or VS Code
+        const isCursor = vscode.env.appName === 'Cursor';
+        
+        // Get appropriate path based on platform and editor
+        if (isCursor) {
+            this.historyPath = process.platform === 'win32' 
+                ? path.join(process.env.APPDATA!, 'Cursor', 'User', 'History')
+                : process.platform === 'darwin'
+                    ? path.join(process.env.HOME!, 'Library', 'Application Support', 'Cursor', 'User', 'History')
+                    : path.join(process.env.HOME!, '.config', 'Cursor', 'User', 'History');
+        } else {
+            // VS Code history paths
+            this.historyPath = process.platform === 'win32'
+                ? path.join(process.env.APPDATA!, 'Code', 'User', 'History')
+                : process.platform === 'darwin'
+                    ? path.join(process.env.HOME!, 'Library', 'Application Support', 'Code', 'User', 'History')
+                    : path.join(process.env.HOME!, '.config', 'Code', 'User', 'History');
+        }
     }
 
     async initialize(workspaceRoot: string): Promise<void> {
