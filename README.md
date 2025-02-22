@@ -1,6 +1,9 @@
-# Grouped Timeline for VS Code
+# Grouped Timeline: Local History Restore Manager for VS Code!
 
-A VS Code extension that groups near-simultaneous changes in your local timeline, allowing you to restore grouped or individual files to any previous save point - much like JetBrains's Rider's Local History feature.
+A VS Code extension that groups near-simultaneous changes in your local timeline, allowing you to restore grouped or individual files to any previous save point - much like JetBrains Rider's Local History feature.
+
+### No previous install necessary, works retroactively!
+Can't figure out exactly which files changed (and how) yesterday? No problem! This extension will tell you!
 
 # Features
 - Groups timeline entries by time window
@@ -8,6 +11,10 @@ A VS Code extension that groups near-simultaneous changes in your local timeline
 - Configurable file tracking through .groupedtimelineinclude
 - Preview changes before restoring
 - Sort by time or number of files changed
+
+# Source Code
+This extension is open source and the code is available [here](https://github.com/bjothorl/grouped-timeline-extension).
+_Feel free to contribute or report issues!_
 
 ## Main Extension View
 ![Main View](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/screenshot.png?raw=true)
