@@ -1,0 +1,169 @@
+{
+  "name": "grouped-timeline",
+  "displayName": "Grouped Timeline",
+  "description": "Groups near-simultaneous changes in VSCode's local timeline, and allows for restoring grouped or individual files to any previous timeline save point.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "enabledApiProposals": [
+    "timeline"
+  ],
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:timeline"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "groupedHistory",
+          "name": "Grouped Timeline"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "groupedHistory",
+        "contents": "Click the refresh button above to show grouped file changes.\n\nEdit .groupedhistoryinclude in your workspace to configure which files to track, then refresh the view.\n\nFor brand new projects, changes can only be shown after second reload."
+      }
+    ],
+    "commands": [
+      {
+        "command": "groupedHistory.filterByFiles",
+        "title": "Filter by Files Changed",
+        "icon": "$(filter)"
+      },
+      {
+        "command": "groupedHistory.refresh",
+        "title": "Refresh History",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "groupedHistory.restoreGroupToBefore",
+        "title": "Restore Group to Before Changes"
+      },
+      {
+        "command": "groupedHistory.restoreGroupToAfter",
+        "title": "Restore Group to After Changes"
+      },
+      {
+        "command": "groupedHistory.restoreAllToBefore",
+        "title": "Restore ALL Files to Before Changes"
+      },
+      {
+        "command": "groupedHistory.restoreAllToAfter",
+        "title": "Restore ALL Files to After Changes"
+      },
+      {
+        "command": "groupedHistory.restore",
+        "title": "Restore Version"
+      },
+      {
+        "command": "groupedHistory.preview",
+        "title": "Preview Version"
+      },
+      {
+        "command": "groupedHistory.sort",
+        "title": "Sort History",
+        "icon": "$(sort-precedence)"
+      },
+      {
+        "command": "groupedHistory.timeWindow",
+        "title": "Change Group Time Window",
+        "icon": "$(clock)"
+      },
+      {
+        "command": "groupedHistory.restoreFileToBefore",
+        "title": "Restore File to Before Changes"
+      },
+      {
+        "command": "groupedHistory.restoreFileToAfter",
+        "title": "Restore File to After Changes"
+      }
+    ],
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "groupedHistory.restoreGroupToBefore",
+          "title": "Restore to Before Changes",
+          "when": "view == groupedHistory && viewItem == historyGroup",
+          "group": "1_modification"
+        },
+        {
+          "command": "groupedHistory.restoreGroupToAfter",
+          "title": "Restore to After Changes",
+          "when": "view == groupedHistory && viewItem == historyGroup",
+          "group": "1_modification"
+        },
+        {
+          "command": "groupedHistory.restoreAllToBefore",
+          "when": "view == groupedHistory && viewItem == historyGroup",
+          "group": "2_modification@1"
+        },
+        {
+          "command": "groupedHistory.restoreAllToAfter",
+          "when": "view == groupedHistory && viewItem == historyGroup",
+          "group": "2_modification@2"
+        },
+        {
+          "command": "groupedHistory.restoreFileToBefore",
+          "when": "view == groupedHistory && viewItem == historyEntry",
+          "group": "1_modification"
+        },
+        {
+          "command": "groupedHistory.restoreFileToAfter",
+          "when": "view == groupedHistory && viewItem == historyEntry",
+          "group": "1_modification"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "groupedHistory.refresh",
+          "when": "view == groupedHistory",
+          "group": "navigation"
+        },
+        {
+          "command": "groupedHistory.filterByFiles",
+          "when": "view == groupedHistory",
+          "group": "navigation"
+        },
+        {
+          "command": "groupedHistory.sort",
+          "when": "view == groupedHistory",
+          "group": "navigation"
+        },
+        {
+          "command": "groupedHistory.timeWindow",
+          "when": "view == groupedHistory",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "vscode:prepublish": "npm run clean && webpack --mode production",
+    "webpack": "npm run clean && webpack --mode production",
+    "compile": "npm run clean && tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^16.x",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.44.0",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.1.6",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "minimatch": "^9.0.3"
+  }
+}

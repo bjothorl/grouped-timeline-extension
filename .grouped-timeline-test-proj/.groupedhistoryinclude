@@ -1,0 +1,8 @@
+# Files to track in grouped history
+# Add patterns for files you want included in grouped history
+# Examples:
+**/*
+
+# By default, no files are tracked unless specified here
+
+# After changing this file, refresh the Grouped History view to see the updates
