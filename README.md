@@ -5,26 +5,26 @@ A VS Code extension that groups near-simultaneous changes in your local timeline
 # Features
 - Groups timeline entries by time window
 - Restores individual files or groups of files
-- Configurable file tracking through .groupedhistoryinclude
+- Configurable file tracking through .groupedtimelineinclude
 - Preview changes before restoring
 - Sort by time or number of files changed
 
 ## Main Extension View
-![Main View](https://github.com/bjothorl/grouped-timeline-extension/raw/main/images/screenshot.png)
+![Main View](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/screenshot.png?raw=true)
 
 ## Restore Options
-![Restore Options](https://github.com/bjothorl/grouped-timeline-extension/raw/main/images/restore_options.png)
+![Restore Options](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/restore_options.png?raw=true)
 
 ## Timeline Groupings
-![Timeline Groupings](https://github.com/bjothorl/grouped-timeline-extension/raw/main/images/groupings.png)
+![Timeline Groupings](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/groupings.png?raw=true)
 
 ## Configuration
-![Configuration](https://github.com/bjothorl/grouped-timeline-extension/raw/main/images/config.png)
-
+![Configuration](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/config.png?raw=true)
+ 
 ## Installation
 [Install from VS Code Marketplace](marketplace-link)
 
 ## Usage
 1. Open the Grouped Timeline view in Explorer (under the built in Timeline view)
-2. Configure tracked files in .groupedhistoryinclude
+2. Configure tracked files in .groupedtimelineinclude
 3. Use context menu to restore or preview versions

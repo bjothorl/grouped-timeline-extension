@@ -54,7 +54,7 @@ export class HistoryReader {
             );
             
             this.fileWatcher.onDidCreate((uri) => {
-                if (!uri.fsPath.includes(".groupedhistoryinclude") && !this.cachedHistoryFiles.some(entry => entry.filePath === uri.fsPath)) {
+                if (!uri.fsPath.includes(".groupedtimelineinclude") && !this.cachedHistoryFiles.some(entry => entry.filePath === uri.fsPath)) {
                     this._onUnregisteredFilesFound.fire();
                 }
             });

@@ -12,7 +12,7 @@ export class IncludeManager {
     readonly onPatternsChanged = this._onPatternsChanged.event;
 
     constructor(workspaceRoot: string) {
-        this.includeFilePath = path.join(workspaceRoot, '.groupedhistoryinclude');
+        this.includeFilePath = path.join(workspaceRoot, '.groupedtimelineinclude');
     }
 
     async loadPatterns(): Promise<void> {
@@ -37,8 +37,8 @@ export class IncludeManager {
     shouldInclude(filePath: string, workspaceRoot: string): boolean {
         // Get path relative to workspace root
         const relativePath = path.relative(workspaceRoot, filePath);
-        // Don't include the .groupedhistoryinclude file
-        if (path.basename(relativePath) === '.groupedhistoryinclude') {
+        // Don't include the .groupedtimelineinclude file
+        if (path.basename(relativePath) === '.groupedtimelineinclude') {
             return false;
         }
         return this.patterns.some(pattern => minimatch(relativePath, pattern, { 

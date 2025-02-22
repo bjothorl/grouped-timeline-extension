@@ -53,7 +53,7 @@
     "viewsWelcome": [
       {
         "view": "groupedHistory",
-        "contents": "Click the refresh button above to show grouped file changes.\n\nEdit .groupedhistoryinclude in your workspace to configure which files to track, then refresh the view.\n\nFor brand new projects, changes can only be shown after second reload."
+        "contents": "Click the refresh button above to show grouped file changes.\n\nEdit .groupedtimelineinclude in your workspace to configure which files to track, then refresh the view.\n\nFor brand new projects, changes can only be shown after second reload."
       }
     ],
     "commands": [

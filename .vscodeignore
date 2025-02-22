@@ -18,3 +18,4 @@ images/*.psd
 .prettierrc
 .prettierignore 
 .grouped-timeline-test-proj
+images/**
