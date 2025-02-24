@@ -23,7 +23,7 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
         });
 
         historyReader.onUnregisteredFilesFound(() => {
-            this.hasUnregisteredFiles = true;
+            // this.hasUnregisteredFiles = true;
             this.refresh();
         });
     }

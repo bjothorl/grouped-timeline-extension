@@ -3,6 +3,8 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { HistoryEntry } from './types';
 import { IncludeManager } from './includeManager';
+import { URI } from 'vscode-uri';
+import { createHash } from 'crypto';
 
 interface EntriesJson {
     version: number;
@@ -22,6 +24,10 @@ export class HistoryReader {
     readonly onUnregisteredFilesFound = this._onUnregisteredFilesFound.event;
     private fileWatcher?: vscode.FileSystemWatcher;
     private cachedHistoryFiles: HistoryEntry[] = [];
+    
+    private newFileHashes: Map<string, string> = new Map(); // hash -> filePath
+    private unusedDirectories: Set<string> = new Set();
+
 
     constructor() {
         // Detect if running in Cursor or VS Code
@@ -74,10 +80,12 @@ export class HistoryReader {
                 true   // Ignore deletes
             );
             
-            this.fileWatcher.onDidCreate((uri) => {
+            this.fileWatcher.onDidCreate(async (uri) => {
                 if (!uri.fsPath.includes(".groupedtimelineinclude") && 
                     !this.cachedHistoryFiles.some(entry => entry.filePath === uri.fsPath) &&
                     this.includeManager?.shouldInclude(uri.fsPath, workspaceRoot)) {
+                    
+                    this.registerNewFile(uri.fsPath);
                     this._onUnregisteredFilesFound.fire();
                 }
             });
@@ -90,10 +98,152 @@ export class HistoryReader {
             return [];
         }
 
-        this.cachedHistoryFiles = await this.readHistoryFilesInternal(workspaceRoot);
+        this.cachedHistoryFiles = await this.readHistoryWithAdditionalFileHashes(workspaceRoot);
         return this.cachedHistoryFiles;
     }
 
+    private async readHistoryWithAdditionalFileHashes(workspaceRoot: string): Promise<HistoryEntry[]> {
+        const entries: HistoryEntry[] = [];
+        
+        if (!this.includeManager) {
+            await this.initialize(workspaceRoot);
+        }
+    
+        try {
+            // Read all directories in history path
+            const dirs = await fs.readdir(this.historyPath);
+            const processedDirs = new Set<string>();
+    
+            // First pass: Process entries.json to find known files
+            for (const dir of dirs) {
+                const dirPath = path.join(this.historyPath, dir);
+                const entriesJsonPath = path.join(dirPath, 'entries.json');
+                
+                try {
+                    // Try to read entries.json
+                    const entriesJson: EntriesJson = JSON.parse(
+                        await fs.readFile(entriesJsonPath, 'utf-8')
+                    );
+                    
+                    const fileUri = vscode.Uri.parse(entriesJson.resource);
+                    if (fileUri.fsPath.startsWith(workspaceRoot) && 
+                        this.includeManager?.shouldInclude(fileUri.fsPath, workspaceRoot)) {
+                        
+                        processedDirs.add(dir);
+                        
+                        // Process entries as before
+                        const files = await fs.readdir(dirPath);
+                        const allEntries = [...entriesJson.entries];
+    
+                        for (const file of files) {
+                            if (file === 'entries.json') continue;
+                            
+                            if (!entriesJson.entries.some(entry => entry.id === file)) {
+                                const filePath = path.join(dirPath, file);
+                                const stats = await fs.stat(filePath);
+                                
+                                allEntries.push({
+                                    timestamp: stats.mtime.getTime(),
+                                    id: file,
+                                });
+                            }
+                        }
+    
+                        // Add entries to our result
+                        for (const entry of allEntries) {
+                            const historyFilePath = path.join(dirPath, entry.id);
+                            entries.push({
+                                timestamp: new Date(entry.timestamp),
+                                historyFilePath,
+                                dir,
+                                filePath: fileUri.fsPath
+                            });
+                        }
+                    } else {
+                        // If the directory is not in the current workspace, add it to the unused directories
+                        this.unusedDirectories.add(dir);
+                    }
+
+                } catch (e) {
+                    // If entries.json doesn't exist or can't be read, add it to the unused directories
+                    if (!processedDirs.has(dir)) {
+                        this.unusedDirectories.add(dir);
+                    }
+                    continue;
+                }
+            }
+    
+            // Second pass: Check unused directories against our new file hashes
+            for (const dir of this.unusedDirectories) {
+                if (this.newFileHashes.has(dir)) {
+                    const dirPath = path.join(this.historyPath, dir);
+                    try {
+                        const files = await fs.readdir(dirPath);
+                        const filePath = this.newFileHashes.get(dir)!;
+                        
+                        // Process all history files in this directory
+                        for (const historyFile of files) {
+                            if (historyFile === 'entries.json') continue;
+                            
+                            const historyFilePath = path.join(dirPath, historyFile);
+                            const stats = await fs.stat(historyFilePath);
+                            
+                            entries.push({
+                                timestamp: new Date(stats.mtime),
+                                historyFilePath,
+                                dir,
+                                filePath
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error processing unused directory:', error);
+                    }
+                }
+            }
+    
+            // Sort entries by timestamp
+            entries.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+            return entries;
+    
+        } catch (error) {
+            console.error('Error reading history files:', error);
+            return [];
+        }
+    }
+    
+    // Add a method to register new files
+    public registerNewFile(filePath: string): void {
+        const hash = this.hashFilePath(filePath);
+        this.newFileHashes.set(hash, filePath);
+    }
+
+    private hashFilePath(filePath: string): string {
+        // Convert to URI using VS Code's URI class
+        const uri = URI.file(filePath);
+        
+        // Get string representation and hash it
+        const uriString = uri.toString();
+        const hash = this.hashString(uriString);
+        
+        // Convert to hex string, preserving negative sign if present
+        return hash.toString(16);
+    }
+    
+    // This function has been recreated from looking at the VSCode source code.
+    private hashString(s: string): number {
+        let hash = this.numberHash(149417, 0);  // Same initial prime as VS Code
+        for (let i = 0; i < s.length; i++) {
+            hash = this.numberHash(s.charCodeAt(i), hash);
+        }
+        return hash;
+    }
+    
+    private numberHash(val: number, initialHashVal: number): number {
+        return (((initialHashVal << 5) - initialHashVal) + val) | 0;  // Force 32-bit integer
+    }
+
+
+    // remove this after the other function has been thoroughly tested
     private async readHistoryFilesInternal(workspaceRoot: string): Promise<HistoryEntry[]> {
         const entries: HistoryEntry[] = [];
         
