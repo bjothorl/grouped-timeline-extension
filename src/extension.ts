@@ -20,10 +20,11 @@ export function activate(context: vscode.ExtensionContext) {
         treeProvider,
         vscode.commands.registerCommand('groupedHistory.filterByFiles', async () => {
             const items = [
-                { label: 'Show All', description: 'No filter' },
-                { label: 'Single File Changes', description: '1 file' },
-                { label: 'Two File Changes', description: '2 files' },
-                { label: 'Three or More Files', description: '3+ files' }
+                { label: 'Show all file changes', description: 'No filter', count: undefined },
+                { label: '2+ file changes', description: '2+ files', count: 2 },
+                { label: '5+ file changes', description: '5+ files', count: 5 },
+                { label: '10+ file changes', description: '10+ files', count: 10 },
+                { label: '50+ file changes', description: '50+ files', count: 50 },
             ];
             
             const selected = await vscode.window.showQuickPick(items, {
@@ -32,17 +33,20 @@ export function activate(context: vscode.ExtensionContext) {
 
             if (selected) {
                 switch(selected.label) {
-                    case 'Show All':
+                    case 'Show all file changes':
                         await treeProvider.setFileCountFilter(undefined);
                         break;
-                    case 'Single File Changes':
-                        await treeProvider.setFileCountFilter(1);
-                        break;
-                    case 'Two File Changes':
+                    case '2+ file changes':
                         await treeProvider.setFileCountFilter(2);
                         break;
-                    case 'Three or More Files':
-                        await treeProvider.setFileCountFilter(-1);
+                    case '5+ file changes':
+                        await treeProvider.setFileCountFilter(5);
+                        break;
+                    case '10+ file changes':
+                        await treeProvider.setFileCountFilter(10);
+                        break;
+                    case '50+ file changes':
+                        await treeProvider.setFileCountFilter(50);
                         break;
                 }
             }

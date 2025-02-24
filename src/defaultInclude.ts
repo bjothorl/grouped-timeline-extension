@@ -1,9 +1,33 @@
 export const DEFAULT_INCLUDE_CONTENT = `# Files to track with Grouped Timeline
 # Add patterns for files you want included in the Grouped Timeline
-
-# This will track all files, and usually works well, but can be slow in large projects. As such, it is commented out by default:
-# **/* 
-
-# By default, no files are tracked unless specified here
+# Use ! to exclude files/folders (anti-patterns)
 # After changing this file, refresh the Grouped Timeline view to see the updates
+
+# Track all files by default (commented out because it might be slow for large projects)
+# *
+# */**
+
+# Common exclusions
+!node_modules/**
+!dist/**
+!out/**
+!build/**
+!.git/**
+!coverage/**
+!.next/**
+!.cache/**
+!tmp/**
+!temp/**
+
+# Exclude common large/binary files
+!*/**.exe
+!*/**.dll
+!*/**.zip
+!*/**.tar
+!*/**.gz
+!*/**.rar
+!*/**.7z
+!*/**.iso
+!*/**.bin
+!*/**.log
 `; 

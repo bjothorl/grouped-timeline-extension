@@ -42,11 +42,20 @@ export class HistoryReader {
                     ? path.join(process.env.HOME!, 'Library', 'Application Support', 'Code', 'User', 'History')
                     : path.join(process.env.HOME!, '.config', 'Code', 'User', 'History');
         }
+
+        
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (workspaceFolders) {
+            this.initialize(workspaceFolders[0].uri.fsPath);
+        }
+        else {
+            console.error('No workspace folders found');
+        }
     }
 
     async initialize(workspaceRoot: string): Promise<void> {
         this.includeManager = new IncludeManager(workspaceRoot);
-        await this.includeManager.initialize();
+        await this.includeManager.loadPatterns();
         this.includeManager.onPatternsChanged(() => this._onIncludePatternsChanged.fire());
         
         // Setup file watcher for included patterns
@@ -56,24 +65,31 @@ export class HistoryReader {
     private updateFileWatcher(workspaceRoot: string): void {
         this.fileWatcher?.dispose();
         
-        const patterns = this.includeManager?.getPatterns() ?? [];
-        if (patterns.length > 0) {
+        const { includes } = this.includeManager?.getPatterns() ?? { includes: [] };
+        if (includes.length > 0) {
             this.fileWatcher = vscode.workspace.createFileSystemWatcher(
-                new vscode.RelativePattern(workspaceRoot, `{${patterns.join(',')}}`),
+                new vscode.RelativePattern(workspaceRoot, `{${includes.join(',')}}`),
                 false, // Don't ignore creates
                 true,  // Ignore changes
                 true   // Ignore deletes
             );
             
             this.fileWatcher.onDidCreate((uri) => {
-                if (!uri.fsPath.includes(".groupedtimelineinclude") && !this.cachedHistoryFiles.some(entry => entry.filePath === uri.fsPath)) {
+                if (!uri.fsPath.includes(".groupedtimelineinclude") && 
+                    !this.cachedHistoryFiles.some(entry => entry.filePath === uri.fsPath) &&
+                    this.includeManager?.shouldInclude(uri.fsPath, workspaceRoot)) {
                     this._onUnregisteredFilesFound.fire();
                 }
             });
         }
     }
 
-    async readHistoryFiles(workspaceRoot: string): Promise<HistoryEntry[]> {
+    async readHistoryFiles(): Promise<HistoryEntry[]> {
+        const workspaceRoot = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+        if (!workspaceRoot) {
+            return [];
+        }
+
         this.cachedHistoryFiles = await this.readHistoryFilesInternal(workspaceRoot);
         return this.cachedHistoryFiles;
     }
@@ -170,7 +186,7 @@ export class HistoryReader {
         }
 
         // Get all history entries for current workspace
-        const allHistoryEntries = await this.readHistoryFiles(workspaceRoot);
+        const allHistoryEntries = await this.readHistoryFiles();
 
 
         // Group entries by file path
@@ -212,8 +228,8 @@ export class HistoryReader {
         this.includeManager?.dispose();
     }
 
-    getIncludePatterns(): string[] {
-        return this.includeManager?.getPatterns() ?? [];
+    getIncludePatterns(): { includes: string[], excludes: string[] } {
+        return this.includeManager?.getPatterns() ?? { includes: [], excludes: [] };
     }
 
     async loadContent(entry: HistoryEntry): Promise<string> {

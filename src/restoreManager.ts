@@ -131,32 +131,14 @@ export class RestoreManager {
                 ? path.relative(vscode.workspace.workspaceFolders[0].uri.fsPath, entry)
                 : entry);
 
-        // Format files into columns (3 max)
-        const formatFilesInColumns = (files: string[]): string => {
-            const columns: string[][] = [[], [], []];
-            files.forEach((file, index) => {
-                columns[index % 3].push(file);
-            });
-            
-            const rows: string[] = [];
-            for (let i = 0; i < Math.max(...columns.map(col => col.length)); i++) {
-                const row = columns
-                    .map(col => col[i] ? `• ${col[i]}` : '')
-                    .filter(Boolean)
-                    .join('\t');
-                rows.push(row);
-            }
-            return rows.join('\n');
-        };
-
         let message = `These files are going to be restored to ${isAfterVersion ? 'after' : 'before'} changes:\n`;
         if (groupFiles.length > 0) {
-            message += `\n${formatFilesInColumns(groupFiles)}\n`;
+            message += `\n${groupFiles.join('\n')}\n`;
         }
 
         if (otherFiles.length > 0) {
             message += `\nThe following files have changes registered after ${timeStr} and will be restored to their state before:\n`;
-            message += `\n${formatFilesInColumns(otherFiles)}`;
+            message += `\n${otherFiles.join('\n')}`;
         }
 
         const choice = await vscode.window.showInformationMessage(

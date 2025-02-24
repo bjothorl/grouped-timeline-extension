@@ -19,7 +19,6 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
     ) {
         // Listen for include pattern changes
         historyReader.onIncludePatternsChanged(() => {
-            this.updateFileWatcher();
             this.refresh();
         });
 
@@ -27,29 +26,6 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
             this.hasUnregisteredFiles = true;
             this.refresh();
         });
-
-        // Initial file watcher setup
-        this.updateFileWatcher();
-    }
-
-    private updateFileWatcher(): void {
-        // Dispose old watcher if exists
-        this.fileWatcher?.dispose();
-
-        // Get current include patterns
-        const patterns = this.historyReader.getIncludePatterns();
-        if (patterns.length > 0) {
-            // Create watcher for each pattern
-            this.fileWatcher = vscode.workspace.createFileSystemWatcher(
-                `{${patterns.join(',')}}`,
-                false, // Don't ignore creates
-                false, // Don't ignore changes
-                false  // Don't ignore deletes
-            );
-            this.fileWatcher.onDidChange(() => this.refresh());
-            this.fileWatcher.onDidCreate(() => this.refresh());
-            this.fileWatcher.onDidDelete(() => this.refresh());
-        }
     }
 
     async refresh(): Promise<void> {
@@ -154,18 +130,14 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
                     }
                 ];
             }
-
-            const workspaceFolders = vscode.workspace.workspaceFolders;
-            if (!workspaceFolders) return undefined;
             
-            const entries = await this.historyReader.readHistoryFiles(workspaceFolders[0].uri.fsPath);
+            const entries = await this.historyReader.readHistoryFiles();
             let groups = this.changeGrouper.groupChanges(entries);
 
             // Apply file count filter if set
             if (this.fileCountFilter !== undefined) {
-                groups = this.fileCountFilter === -1
-                    ? groups.filter(group => group.files.length >= 3)
-                    : groups.filter(group => group.files.length === this.fileCountFilter);
+                const fileCount = this.fileCountFilter;
+                groups = groups.filter(group => group.files.length >= fileCount);
             }
 
             // Apply sort
