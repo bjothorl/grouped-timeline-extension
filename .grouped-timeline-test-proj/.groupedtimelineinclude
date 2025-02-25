@@ -4,8 +4,8 @@
 # After changing this file, refresh the Grouped Timeline view to see the updates
 
 # Track all files by default
-*
-*/**
+# *
+# */**
 
 # Common exclusions
 !node_modules/**

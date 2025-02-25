@@ -3,7 +3,6 @@ import { HistoryEntry } from './types';
 import * as path from 'path';
 import { HistoryReader } from './historyReader';
 import { GroupedChange } from './types';
-import { SourceControlResourceState } from 'vscode';
 
 export class RestoreManager {
     private historyReader: HistoryReader;

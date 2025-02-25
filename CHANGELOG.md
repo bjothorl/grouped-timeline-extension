@@ -1,5 +1,5 @@
 1.2.0
-- Add !exclude support to .groupedtimelineinclude
+- Add "!" exclude pattern support to .groupedtimelineinclude
 - Add support for new files, instead of requiring to exit and reopen the editor
 
 1.1.0
