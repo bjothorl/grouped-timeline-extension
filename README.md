@@ -15,21 +15,21 @@ Can't figure out exactly which files changed (and how) yesterday? No problem! Th
 - Sort by time or number of files changed
 
 # How to first use
-1. Open the Grouped Timeline view in Explorer (under the built in Timeline view), and click the refresh icon
+1. After installing the extension, a `.groupedtimelineinclude` file will be created in your workspace root. Open it.
 
-![Main View](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/how-to-1.png?raw=true)
+![Include file](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/include-file-in-root.png?raw=true)
 
-2. A `.groupedtimelineinclude` file will be created in your workspace root. Open it.
+2. For most projects, uncomment the `**/*` and `*` lines in the file so it looks like this:
 
-![Main View](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/how-to-2.png?raw=true)
+![Config settings](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/config-uncomment.png?raw=true)
 
-3. For most projects, uncomment the `**/*` line in the `.groupedtimelineinclude` file so it looks like this:
+3. Click the refresh icon in the Grouped Timeline view in Explorer (under the built in Timeline view) to refresh the timeline.
 
-![Main View](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/how-to-3.png?raw=true)
+![Refresh](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/refresh-button.png?raw=true)
 
 4. Use context menu to restore or preview versions
 
-![Main View](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/how-to-4.png?raw=true)
+![Context Menu](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/context-menu.png?raw=true)
 
 # Screenshots
 
