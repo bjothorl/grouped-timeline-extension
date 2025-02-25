@@ -2,7 +2,7 @@
   "name": "grouped-timeline",
   "displayName": "Grouped Timeline",
   "description": "Groups near-simultaneous changes in VSCode's local timeline, and allows for restoring grouped or individual files to any previous timeline save point.\nMuch like JetBrains's Rider's Local History feature.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "publisher": "Ignire",
   "repository": {
     "type": "git",
