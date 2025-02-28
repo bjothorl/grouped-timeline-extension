@@ -6,8 +6,14 @@
 3. Open in VS Code
 4. F5 to start debugging
 
+## Debugging
+There are 2 launch options
+- TypeScript compiled code
+- Webpacked code for production
+
 ## Building
 - npm run webpack
 - npm run compile
 
-## Testing
+# Packaging
+- npm version patch|minor|major && vsce package
