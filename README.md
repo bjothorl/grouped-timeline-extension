@@ -13,6 +13,7 @@ Can't figure out exactly which files changed (and how) yesterday? No problem! Th
 - Configurable file tracking through .groupedtimelineinclude
 - Preview changes before restoring
 - Sort by time or number of files changed
+- Search for specific files or groups of files
 
 # How to first use
 1. After installing the extension, a `.groupedtimelineinclude` file will be created in your workspace root. Open it.
@@ -44,6 +45,9 @@ Can't figure out exactly which files changed (and how) yesterday? No problem! Th
 
 ### Configuration
 ![Configuration](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/config.png?raw=true)
+
+### Search
+![Search](https://github.com/bjothorl/grouped-timeline-extension/blob/master/images/search.png?raw=true)
 
 # Source Code
 This extension is open source and the code is available [here](https://github.com/bjothorl/grouped-timeline-extension).
