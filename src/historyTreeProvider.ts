@@ -120,21 +120,10 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
         this.refresh();
     }
 
-    private itemMatchesSearch(element: GroupedChange | HistoryEntry | SearchQueryItem): boolean {
-        if (!this.searchQuery) return true;
-        
-        if ('isSearchQuery' in element) {
-            return element.summary.toLowerCase().includes(this.searchQuery);
-        }
-        
-        if ('changes' in element) { // GroupedChange
-            return element.files.some(file => 
-                path.basename(file).toLowerCase().includes(this.searchQuery)
-            );
-        }
-        
-        // HistoryEntry
-        return path.basename(element.filePath).toLowerCase().includes(this.searchQuery);
+    private itemMatchesSearch(element: GroupedChange): boolean {
+        return element.files.some(file => 
+            path.basename(file).toLowerCase().includes(this.searchQuery)
+        );
     }
 
     async getChildren(element?: GroupedChange | HistoryEntry | SearchQueryItem): Promise<(GroupedChange | HistoryEntry | SearchQueryItem)[] | undefined> {
@@ -165,7 +154,7 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
 
             // Apply search filter
             if (this.searchQuery) {
-                groups = groups.filter(group => this.itemMatchesSearch(group));
+                groups = groups.filter(group => ('changes' in group && this.itemMatchesSearch(group) || 'isSearchQuery' in group));
             }
 
             // Apply file count filter if set
@@ -191,8 +180,9 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
             return [...items, ...groups];
         }
 
-        if ('changes' in element) { // GroupedChange
-            return element.changes.filter(change => this.itemMatchesSearch(change));
+        // Show changes when opening a group
+        if ('changes' in element) { 
+            return element.changes;
         }
 
         return undefined;

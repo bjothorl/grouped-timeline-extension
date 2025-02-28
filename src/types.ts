@@ -14,9 +14,6 @@ export interface GroupedChange {
 } 
 
 export interface SearchQueryItem {
-    timestamp: Date;
-    files: string[];
-    changes: HistoryEntry[];
     summary: string;
     isSearchQuery: true;
     command?: {
