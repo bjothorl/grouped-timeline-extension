@@ -1,3 +1,9 @@
+1.3.1
+- Fixed search showing all changes in a group, if one file matches the query
+
+1.3.0
+- Added search functionality to the grouped history view
+
 1.2.1
 - Updated readme for new version
 
