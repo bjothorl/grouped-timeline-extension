@@ -108,6 +108,16 @@
       {
         "command": "groupedHistory.restoreFileToAfter",
         "title": "Restore File to After Changes"
+      },
+      {
+        "command": "groupedHistory.search",
+        "title": "Search Timeline",
+        "icon": "$(search)"
+      },
+      {
+        "command": "groupedHistory.clearSearch",
+        "title": "Clear Search",
+        "icon": "$(close)"
       }
     ],
     "menus": {
@@ -143,6 +153,11 @@
           "command": "groupedHistory.restoreFileToAfter",
           "when": "view == groupedHistory && viewItem == historyEntry",
           "group": "1_modification"
+        },
+        {
+          "command": "groupedHistory.clearSearch",
+          "when": "view == groupedHistory && viewItem == searchIndicator",
+          "group": "inline"
         }
       ],
       "view/title": [
@@ -163,6 +178,11 @@
         },
         {
           "command": "groupedHistory.timeWindow",
+          "when": "view == groupedHistory",
+          "group": "navigation"
+        },
+        {
+          "command": "groupedHistory.search",
           "when": "view == groupedHistory",
           "group": "navigation"
         }

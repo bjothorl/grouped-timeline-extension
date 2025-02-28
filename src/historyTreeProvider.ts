@@ -1,17 +1,17 @@
 import * as vscode from 'vscode';
 import { HistoryReader } from './historyReader';
 import { ChangeGrouper } from './changeGrouper';
-import { GroupedChange, HistoryEntry, WarningItem } from './types';
+import { GroupedChange, HistoryEntry, SearchQueryItem } from './types';
 import * as path from 'path';
 
-export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChange | HistoryEntry | WarningItem> {
+export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChange | HistoryEntry | SearchQueryItem> {
     private _onDidChangeTreeData = new vscode.EventEmitter<void>();
     readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
     private fileWatcher?: vscode.FileSystemWatcher;
     private sortOrder: 'Newest First' | 'Oldest First' | 'Most Files Changed' | 'Fewest Files Changed' = 'Newest First';
     private fileCountFilter?: number;
     private hasRefreshed = false;
-    private hasUnregisteredFiles = false;
+    private searchQuery: string = '';
 
     constructor(
         private historyReader: HistoryReader,
@@ -23,7 +23,6 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
         });
 
         historyReader.onUnregisteredFilesFound(() => {
-            // this.hasUnregisteredFiles = true;
             this.refresh();
         });
     }
@@ -35,13 +34,24 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
         this._onDidChangeTreeData.fire();
     }
 
-    getTreeItem(element: GroupedChange | HistoryEntry): vscode.TreeItem {
-        if ('isWarning' in element && 'summary' in element) {
-            return {
-                label: element.summary,
-                collapsibleState: vscode.TreeItemCollapsibleState.None,
-                contextValue: 'warning'
-            };
+    getTreeItem(element: GroupedChange | HistoryEntry | SearchQueryItem): vscode.TreeItem {
+        if ('isSearchQuery' in element) {
+            const treeItem = new vscode.TreeItem(element.summary);
+            treeItem.collapsibleState = vscode.TreeItemCollapsibleState.None;
+            
+            // If this is a search indicator, create a special label with clear button
+            if (element.summary.includes('🔍')) {
+                treeItem.label = {
+                    label: `🔍 Search: "${this.searchQuery}"`,
+                };
+                treeItem.contextValue = 'searchIndicator'; // Used for command enablement
+                treeItem.command = {
+                    command: 'groupedHistory.search',
+                    title: 'Change search query'
+                };
+            }
+            
+            return treeItem;
         }
         if ('changes' in element) { // GroupedChange
             const relativeTime = this.getRelativeTimeString(element.timestamp);
@@ -105,34 +115,58 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
         this.refresh();
     }
 
-    async getChildren(element?: GroupedChange | HistoryEntry | WarningItem): Promise<(GroupedChange | HistoryEntry | WarningItem)[] | undefined> {
+    async setSearchQuery(query: string) {
+        this.searchQuery = query.toLowerCase();
+        this.refresh();
+    }
+
+    private itemMatchesSearch(element: GroupedChange | HistoryEntry | SearchQueryItem): boolean {
+        if (!this.searchQuery) return true;
+        
+        if ('isSearchQuery' in element) {
+            return element.summary.toLowerCase().includes(this.searchQuery);
+        }
+        
+        if ('changes' in element) { // GroupedChange
+            return element.files.some(file => 
+                path.basename(file).toLowerCase().includes(this.searchQuery)
+            );
+        }
+        
+        // HistoryEntry
+        return path.basename(element.filePath).toLowerCase().includes(this.searchQuery);
+    }
+
+    async getChildren(element?: GroupedChange | HistoryEntry | SearchQueryItem): Promise<(GroupedChange | HistoryEntry | SearchQueryItem)[] | undefined> {
         if (!element) {
             if (!this.hasRefreshed) {
                 return [];
             }
 
-            // Add warning message if unregistered files exist
-            const items: (GroupedChange | HistoryEntry | WarningItem)[] = [];
+            const items: (GroupedChange | HistoryEntry | SearchQueryItem)[] = [];
             
-            if (this.hasUnregisteredFiles) {
-                return[{
-                        timestamp: new Date(),
-                        files: [],
-                        changes: [],
-                        summary: "⚠️\tNew file creation detected.",
-                        isWarning: true
-                    },{
-                        timestamp: new Date(),
-                        files: [],
-                        changes: [],
-                        summary: "\tRestart editor to see grouped timeline.",
-                        isWarning: true
+            // Add search query indicator if there's an active search
+            if (this.searchQuery) {
+                items.push({
+                    timestamp: new Date(),
+                    files: [],
+                    changes: [],
+                    summary: `🔍\tSearch: "${this.searchQuery}"`,
+                    isSearchQuery: true,
+                    command: {
+                        command: 'groupedHistory.search',
+                        title: 'Change search query'
                     }
-                ];
+                });
             }
-            
+
             const entries = await this.historyReader.readHistoryFiles();
             let groups = this.changeGrouper.groupChanges(entries);
+
+            // Apply search filter
+            if (this.searchQuery) {
+                groups = groups.filter(group => this.itemMatchesSearch(group));
+            }
 
             // Apply file count filter if set
             if (this.fileCountFilter !== undefined) {
@@ -158,7 +192,7 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
         }
 
         if ('changes' in element) { // GroupedChange
-            return element.changes;
+            return element.changes.filter(change => this.itemMatchesSearch(change));
         }
 
         return undefined;

@@ -13,7 +13,14 @@ export interface GroupedChange {
     summary: string;
 } 
 
-export interface WarningItem {
+export interface SearchQueryItem {
+    timestamp: Date;
+    files: string[];
+    changes: HistoryEntry[];
     summary: string;
-    isWarning: true;
+    isSearchQuery: true;
+    command?: {
+        command: string;
+        title: string;
+    };
 }

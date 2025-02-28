@@ -123,6 +123,18 @@ export function activate(context: vscode.ExtensionContext) {
                 treeProvider.refresh();
             }
         }),
-
+        vscode.commands.registerCommand('groupedHistory.search', async () => {
+            const searchQuery = await vscode.window.showInputBox({
+                placeHolder: 'Search by file name...',
+                prompt: 'Enter text to filter timeline entries'
+            });
+            
+            if (searchQuery !== undefined) { // User didn't cancel
+                await treeProvider.setSearchQuery(searchQuery);
+            }
+        }),
+        vscode.commands.registerCommand('groupedHistory.clearSearch', async () => {
+            await treeProvider.setSearchQuery('');
+        })
     );
 } 
