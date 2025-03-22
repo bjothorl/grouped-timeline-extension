@@ -118,6 +118,11 @@
         "command": "groupedHistory.clearSearch",
         "title": "Clear Search",
         "icon": "$(close)"
+      },
+      {
+        "command": "groupedHistory.previewWithCurrent",
+        "title": "Compare with current version",
+        "icon": "$(compare-changes)"
       }
     ],
     "menus": {
@@ -153,6 +158,11 @@
           "command": "groupedHistory.restoreFileToAfter",
           "when": "view == groupedHistory && viewItem == historyEntry",
           "group": "1_modification"
+        },
+        {
+          "command": "groupedHistory.previewWithCurrent",
+          "when": "view == groupedHistory && viewItem == historyEntry",
+          "group": "inline"
         },
         {
           "command": "groupedHistory.clearSearch",

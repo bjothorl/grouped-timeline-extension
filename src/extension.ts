@@ -60,6 +60,9 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('groupedHistory.preview', (entry) => 
             restoreManager.previewVersion(entry)
         ),
+        vscode.commands.registerCommand('groupedHistory.previewWithCurrent', (entry) => 
+            restoreManager.previewVersionWithCurrent(entry)
+        ),
         vscode.commands.registerCommand('groupedHistory.restoreGroupToBefore', (group) => 
             restoreManager.restoreGroupToBefore(group)
         ),
