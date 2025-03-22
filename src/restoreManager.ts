@@ -80,6 +80,36 @@ export class RestoreManager {
         currentRegistration.dispose();
     }
 
+    async previewVersionWithCurrent(entry: HistoryEntry): Promise<void> {
+        const selectedUri = vscode.Uri.parse(`history-diff-selected://${entry.filePath}.${entry.timestamp.getTime()}`);
+        const currentUri = vscode.Uri.parse(`history-diff-current://${entry.filePath}`);
+
+        const selectedRegistration = vscode.workspace.registerTextDocumentContentProvider('history-diff-selected', {
+            provideTextDocumentContent: async () => this.historyReader.loadContent(entry)
+        });
+
+        const currentRegistration = vscode.workspace.registerTextDocumentContentProvider('history-diff-current', {
+            provideTextDocumentContent: async () => {
+                try {
+                    const currentFileUri = vscode.Uri.file(entry.filePath);
+                    const currentContent = await vscode.workspace.fs.readFile(currentFileUri);
+                    return new TextDecoder().decode(currentContent);
+                } catch (error) {
+                    return 'File no longer exists in workspace';
+                }
+            }
+        });
+
+        await vscode.commands.executeCommand('vscode.diff',
+            selectedUri,
+            currentUri,
+            `History: ${path.basename(entry.filePath)} (${new Date(entry.timestamp).toLocaleString()} vs Current)`
+        );
+
+        selectedRegistration.dispose();
+        currentRegistration.dispose();
+    }
+
     private async checkUnsavedFiles(entryFilePaths: string[], timestamp: Date, isAllFiles: boolean = false): Promise<boolean> {
         const unsavedFiles = [];
         for (const entryFilePath of entryFilePaths) {

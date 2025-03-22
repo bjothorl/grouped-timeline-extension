@@ -82,6 +82,7 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
                 description: `${time} • ${path.relative(vscode.workspace.workspaceFolders![0].uri.fsPath, element.filePath)}`,
                 collapsibleState: vscode.TreeItemCollapsibleState.None,
                 contextValue: 'historyEntry',
+                iconPath: new vscode.ThemeIcon('git-compare'),
                 command: {
                     command: 'groupedHistory.preview',
                     title: 'Preview Version',
@@ -186,6 +187,20 @@ export class HistoryTreeProvider implements vscode.TreeDataProvider<GroupedChang
         }
 
         return undefined;
+    }
+
+    async getTreeItemContextMenu(element: GroupedChange | HistoryEntry | SearchQueryItem): Promise<vscode.Command[]> {
+        if ('changes' in element) {
+            return [];
+        }
+
+        return [
+            {
+                command: 'groupedHistory.previewWithCurrent',
+                title: 'Compare with current version',
+                arguments: [element]
+            }
+        ];
     }
 
     dispose(): void {
