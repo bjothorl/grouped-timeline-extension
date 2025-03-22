@@ -11,7 +11,7 @@ Can't figure out exactly which files changed (and how) yesterday? No problem! Th
 - Groups timeline entries by time window
 - Restores individual files or groups of files
 - Configurable file tracking through .groupedtimelineinclude
-- Preview changes before restoring
+- Preview changes before restoring (compared with next save, or with current version)
 - Sort by time or number of files changed
 - Search for specific files or groups of files
 
