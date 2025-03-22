@@ -1,3 +1,7 @@
+1.4.0
+- Added support for Windsurf - by [@andycjw](https://github.com/bjothorl/grouped-timeline-extension/pull/2)
+- Added "compare with current" feature - by [@andycjw](https://github.com/bjothorl/grouped-timeline-extension/pull/3)
+
 1.3.1
 - Fixed search showing all changes in a group, if one file matches the query
 
