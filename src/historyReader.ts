@@ -32,6 +32,7 @@ export class HistoryReader {
     constructor() {
         // Detect if running in Cursor or VS Code
         const isCursor = vscode.env.appName === 'Cursor';
+        const isWindsurf = vscode.env.appName === 'Windsurf';
         
         // Get appropriate path based on platform and editor
         if (isCursor) {
@@ -40,7 +41,14 @@ export class HistoryReader {
                 : process.platform === 'darwin'
                     ? path.join(process.env.HOME!, 'Library', 'Application Support', 'Cursor', 'User', 'History')
                     : path.join(process.env.HOME!, '.config', 'Cursor', 'User', 'History');
-        } else {
+        } else if (isWindsurf) {
+            // Windsurf history paths
+            this.historyPath = process.platform === 'win32'
+                ? path.join(process.env.APPDATA!, 'Windsurf', 'User', 'History')
+                : process.platform === 'darwin'
+                    ? path.join(process.env.HOME!, 'Library', 'Application Support', 'Windsurf', 'User', 'History')
+                    : path.join(process.env.HOME!, '.windsurf-server', 'data', 'User', 'History');
+        }else {
             // VS Code history paths
             this.historyPath = process.platform === 'win32'
                 ? path.join(process.env.APPDATA!, 'Code', 'User', 'History')
@@ -55,7 +63,7 @@ export class HistoryReader {
             this.initialize(workspaceFolders[0].uri.fsPath);
         }
         else {
-            console.error('No workspace folders found');
+            console.error('No workspace folders found by timeline extension');
         }
     }
 
