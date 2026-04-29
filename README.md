@@ -52,3 +52,7 @@ Can't figure out exactly which files changed (and how) yesterday? No problem! Th
 # Source Code
 This extension is open source and the code is available [here](https://github.com/bjothorl/grouped-timeline-extension).
 _Feel free to contribute or report issues!_
+
+
+_THX FOR ALL THE SUPPORT <3_
+<img width="1224" height="460" alt="image" src="https://github.com/user-attachments/assets/b5ac938f-d91b-4392-a3a1-a93bb6526d4d" />
